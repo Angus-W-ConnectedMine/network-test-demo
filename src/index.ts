@@ -57,7 +57,7 @@ const server = serve({
 
 import os from 'os';
 
-const getLocalNetworkIP = (): string => {
+const getLocalNetworkIPs = (): string[] => {
   const interfaces = os.networkInterfaces();
   const ips: string[] = [];
 
@@ -76,10 +76,10 @@ const getLocalNetworkIP = (): string => {
     }
   }
 
-  return ips[0] ?? "";
+  return ips;
 };
 
-const localIPs = getLocalNetworkIP();
+const localIPs = getLocalNetworkIPs();
 
 if (localIPs.length == 0) {
   console.log("Could not determine local network IP address.");
