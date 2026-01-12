@@ -16,11 +16,7 @@ export function ClientToServer() {
       const url = "/api/message"
       const method = "PUT"
       const res = await fetch(url, { method, body });
-
-      const data = await res.json();
-      responseInputRef.current!.value = JSON.stringify(data, null, 2);
     } catch (error) {
-      responseInputRef.current!.value = String(error);
     }
   };
 
@@ -32,7 +28,6 @@ export function ClientToServer() {
           Send
         </button>
       </form>
-      <textarea ref={responseInputRef} readOnly placeholder="Response will appear here..." className="response-area" />
     </div>
   );
 }
