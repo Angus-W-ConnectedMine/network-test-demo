@@ -79,7 +79,19 @@ const getLocalNetworkIP = (): string => {
   return ips[0] ?? "";
 };
 
-const localIP = getLocalNetworkIP();
+const localIPs = getLocalNetworkIP();
+
+if (localIPs.length == 0) {
+  console.log("Could not determine local network IP address.");
+  process.exit(1);
+}
+
+if (localIPs.length > 1) {
+  console.log("Multiple network interfaces detected. Using the first one:", localIPs);
+}
+
+const localIP = localIPs[0]
+
 const address = `http://${localIP}:${server.port}`
 console.log(address);
 
