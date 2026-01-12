@@ -1,5 +1,6 @@
 import { serve } from "bun";
 import index from "./index.html";
+import QRCode from 'qrcode';
 
 const encoder = new TextEncoder();
 
@@ -81,6 +82,11 @@ const getLocalNetworkIP = (): string => {
 const localIP = getLocalNetworkIP();
 const address = `http://${localIP}:${server.port}`
 console.log(address);
+
+QRCode.toString(address, { type: 'terminal' }, (err, url) => {
+  if (err) throw err;
+  console.log(url);
+});
 
 process.stdout.write("");
 for await (const line of console) {

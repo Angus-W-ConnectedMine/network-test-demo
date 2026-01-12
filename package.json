@@ -9,6 +9,8 @@
     "start": "NODE_ENV=production bun src/index.ts"
   },
   "dependencies": {
+    "@types/qrcode": "^1.5.6",
+    "qrcode": "^1.5.4",
     "react": "^19",
     "react-dom": "^19"
   },
