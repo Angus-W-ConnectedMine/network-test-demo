@@ -54,7 +54,33 @@ const server = serve({
   },
 });
 
-console.log(`🚀 Server running at ${server.url}`);
+import os from 'os';
+
+const getLocalNetworkIP = (): string => {
+  const interfaces = os.networkInterfaces();
+  const ips: string[] = [];
+
+  for (const name of Object.keys(interfaces)) {
+    const nets = interfaces[name];
+    if (!nets) {
+      continue;
+    }
+
+    for (const net of nets) {
+      // Skip internal (loopback) and non-IPv4 addresses
+      // 'internal' is a boolean indicating if the interface is internal or not
+      if (net.family === 'IPv4' && !net.internal) {
+        ips.push(net.address);
+      }
+    }
+  }
+
+  return ips[0] ?? "";
+};
+
+const localIP = getLocalNetworkIP();
+const address = `http://${localIP}:${server.port}`
+console.log(address);
 
 process.stdout.write("");
 for await (const line of console) {
