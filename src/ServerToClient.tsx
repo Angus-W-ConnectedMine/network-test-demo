@@ -29,7 +29,7 @@ export function ServerToClient({ messages, addMessage }: Props) {
     }, []);
 
     return (
-        <div className="whitespace-pre-wrap font-mono p-2 w-full h-full rounded-lg bg-[#1a1a1a] overflow-y-scroll break-words text-left text-green-400">
+        <div className="whitespace-pre-wrap font-mono p-2 w-full h-full rounded-lg bg-[#111] overflow-y-scroll break-words text-left text-green-400">
             {messages.length === 0 ? (
                 <i>Waiting for messages...</i>
             ) : (
