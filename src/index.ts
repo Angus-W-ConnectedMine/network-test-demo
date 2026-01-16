@@ -17,7 +17,7 @@ const server = serve({
         const message = body.message
         console.log("from client: ", message)
 
-        return Response.json({ "ok": "ok" });
+        return Response.json({ received: message, at: new Date().toISOString() });
       },
     },
 

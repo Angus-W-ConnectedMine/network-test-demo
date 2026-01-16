@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
+import type { Props } from "./App";
 
-export function ServerToClient() {
-    const [messages, setMessages] = useState<string[]>([]);
+export function ServerToClient({ messages, addMessage }: Props) {
     const esRef = useRef<EventSource | null>(null);
 
     useEffect(() => {
@@ -9,7 +9,7 @@ export function ServerToClient() {
         esRef.current = es;
 
         const handleMessage = (e: MessageEvent) => {
-            setMessages((prev) => [...prev, e.data]);
+            addMessage(e.data);
         };
 
         const handleError = (e: Event) => {

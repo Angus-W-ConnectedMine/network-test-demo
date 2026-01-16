@@ -1,7 +1,7 @@
 import { useRef, useState, type FormEvent } from "react";
+import type { Props } from "./App";
 
-export function ClientToServer() {
-  const responseInputRef = useRef<HTMLTextAreaElement>(null);
+export function ClientToServer({ messages, addMessage }: Props) {
   const [message, setMessage] = useState('');
 
   const testEndpoint = async (e: FormEvent<HTMLFormElement>) => {
@@ -21,7 +21,7 @@ export function ClientToServer() {
       const method = "PUT"
       const res = await fetch(url, { method, body });
       const data = await res.text()
-      alert(data)
+      addMessage(data)
     } catch (error) {
       alert(`Error: ${error}`);
     }
