@@ -17,13 +17,16 @@ export function ClientToServer({ messages, addMessage }: Props) {
       const body = JSON.stringify({
         "message": message
       })
+
+      addMessage("Tx: " + message);
+
       const url = "/api/message"
       const method = "PUT"
       const res = await fetch(url, { method, body });
       const data = await res.text()
-      addMessage(data)
+      addMessage("Rx: " + data)
     } catch (error) {
-      alert(`Error: ${error}`);
+      alert(`ERROR: ${error}`);
     }
 
     setMessage('');

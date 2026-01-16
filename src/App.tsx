@@ -17,8 +17,11 @@ export function App() {
 
   return (
     <div className="app">
+      <div style={{ marginBottom: "16px" }}>
+        <ServerToClient messages={messages} addMessage={addMessage} />
+      </div>
+
       <ClientToServer messages={messages} addMessage={addMessage} />
-      <ServerToClient messages={messages} addMessage={addMessage} />
     </div>
   );
 }

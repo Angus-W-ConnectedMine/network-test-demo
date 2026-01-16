@@ -9,7 +9,7 @@ export function ServerToClient({ messages, addMessage }: Props) {
         esRef.current = es;
 
         const handleMessage = (e: MessageEvent) => {
-            addMessage(e.data);
+            addMessage("Rx: " + e.data);
         };
 
         const handleError = (e: Event) => {
@@ -29,19 +29,21 @@ export function ServerToClient({ messages, addMessage }: Props) {
     }, []);
 
     return (
-        <div>
-            <h3>Messages from server</h3>
-            <div style={{ whiteSpace: "pre-wrap", fontFamily: "monospace" }}>
-                {messages.length === 0 ? (
-                    <i>No messages</i>
-                ) : (
-                    messages.map((m, i) => (
-                        <div key={i}>
-                            {m}
-                        </div>
-                    ))
-                )}
-            </div>
+        <div style={{
+            whiteSpace: "pre-wrap", fontFamily: "monospace", padding: "8px",
+            width: "600px",
+            background: "#1a1a1a", height: "300px", overflowY: "scroll",
+            overflowWrap: "anywhere", textAlign: "left", color: "#0f0"
+        }}>
+            {messages.length === 0 ? (
+                <i>Waiting for messages...</i>
+            ) : (
+                messages.map((m, i) => (
+                    <div key={i}>
+                        {m}
+                    </div>
+                ))
+            )}
         </div>
     );
 };
