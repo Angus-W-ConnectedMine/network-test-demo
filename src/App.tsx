@@ -16,8 +16,8 @@ export function App() {
   }
 
   return (
-    <div className="app">
-      <div style={{ marginBottom: "16px" }}>
+    <div className="flex flex-col h-screen max-w-[600px] p-4 mx-auto">
+      <div className="grow w-full h-full mb-4">
         <ServerToClient messages={messages} addMessage={addMessage} />
       </div>
 
