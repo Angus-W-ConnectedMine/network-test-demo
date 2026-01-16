@@ -1,3 +1,3 @@
 To build:
 
-`bun build src/index.ts --target bun --outdir dist`
+`bun build ./src/index.ts --compile --outfile ./dist/network-test.exe`
