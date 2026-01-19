@@ -1,3 +1,9 @@
-To build:
+## To deploy
 
-`bun build ./src/index.ts --compile --outfile ./dist/network-test.exe`
+`bun run build`
+
+Copy `./dist` to target device
+
+Download `bun.exe` to target device
+
+Run `./bun.exe ./dist/index.ts`
