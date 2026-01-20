@@ -7,6 +7,8 @@ const encoder = new TextEncoder();
 const openStreams = new Set<ReadableStreamDefaultController>();
 
 const server = serve({
+  port: 3030,
+
   routes: {
     // Serve index.html for all unmatched routes.
     "/*": index,
@@ -19,6 +21,20 @@ const server = serve({
 
         return Response.json({ received: message, at: new Date().toISOString() });
       },
+    },
+
+    "/api/data": {
+      async POST(req) {
+        const body = await req.text()
+
+        const data = body.slice(0, 50)
+
+        const message = `${data}... ${body.length} bytes`
+
+        console.log(message)
+
+        return Response.json({ payload_size_bytes: body.length })
+      }
     },
 
     "/events": {
