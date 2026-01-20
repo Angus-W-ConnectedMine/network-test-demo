@@ -31,7 +31,7 @@ export function App() {
   }
 
   const sendBulkData = async (mb: number) => {
-    const bytes = mb * 1024
+    const bytes = mb * 1024 * 1024
     const data = generateRandomText(bytes)
     const res = await fetch("/api/data", { method: "POST", body: data })
     const status = await res.text()
