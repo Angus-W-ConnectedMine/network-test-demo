@@ -1,4 +1,4 @@
-import { serve } from "bun";
+import { serve, sql } from "bun";
 import index from "./index.html";
 import QRCode from 'qrcode';
 
@@ -21,6 +21,17 @@ const server = serve({
 
         return Response.json({ received: message, at: new Date().toISOString() });
       },
+    },
+
+    "/api/db": {
+      async GET(req) {
+        if (!process.env.DATABASE_URL) {
+          return Response.json({ result: "no database connected" })
+        }
+
+        const result = await sql`SELECT VERSION();`;
+        return Response.json({ result })
+      }
     },
 
     "/api/data": {
