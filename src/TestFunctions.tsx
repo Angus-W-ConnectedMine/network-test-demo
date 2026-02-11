@@ -10,24 +10,13 @@ function generateRandomText(bytes: number): string {
   const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
   const charsLen = chars.length;
 
-  let result = "";
-  for (let i = 0; i < bytes; i += 1) {
-    result += chars.charAt(Math.floor(Math.random() * charsLen));
+  const randomTextArray = new Array(bytes);
+
+  for (let i = 0; i < bytes; i++) {
+    randomTextArray[i] = chars.charAt(Math.floor(Math.random() * charsLen));
   }
 
-  return result;
-}
-
-function formatDbResult(result: unknown): string {
-  if (typeof result === "string") {
-    return result;
-  }
-
-  try {
-    return JSON.stringify(result);
-  } catch {
-    return String(result);
-  }
+  return randomTextArray.join('');
 }
 
 export function TestFunctions({ addMessage }: ServerTestButtonsProps) {
@@ -41,7 +30,7 @@ export function TestFunctions({ addMessage }: ServerTestButtonsProps) {
 
     try {
       const bytes = Math.round(mb * 1024 * 1024);
-      addMessage(`Tx: sending ${mb.toFixed(1)} MB (${bytes} bytes)`);
+      addMessage(`Tx: sending ${bytes} bytes`);
 
       const data = generateRandomText(bytes);
       const response = await fetch("/api/data", {
@@ -53,9 +42,8 @@ export function TestFunctions({ addMessage }: ServerTestButtonsProps) {
         throw new Error(`HTTP ${response.status}`);
       }
 
-      const payload = (await response.json()) as { payload_size_bytes?: number };
-      const payloadSize = payload.payload_size_bytes ?? bytes;
-      addMessage(`Rx: accepted ${payloadSize} bytes`);
+      const payload = await response.json()
+      addMessage(`Rx: accepted ${payload.result} bytes`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       addMessage(`ERR: failed to send bulk data (${message})`);
@@ -75,8 +63,8 @@ export function TestFunctions({ addMessage }: ServerTestButtonsProps) {
         throw new Error(`HTTP ${response.status}`);
       }
 
-      const payload = (await response.json()) as { result?: unknown };
-      addMessage(`Rx: ${formatDbResult(payload.result)}`);
+      const payload = await response.json();
+      addMessage(`Rx: ${payload.result}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       addMessage(`ERR: failed to fetch /api/db (${message})`);

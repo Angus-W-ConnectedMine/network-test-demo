@@ -30,9 +30,8 @@ export function TerminalInput({ addMessage }: ClientToServerProps) {
         throw new Error(`HTTP ${response.status}`);
       }
 
-      const data = (await response.json()) as { received?: string };
-      const received = data.received ?? "(no message returned)";
-      addMessage(`Rx: ${received}`);
+      const data = await response.text();
+      addMessage(`Rx: ${data}`);
       setMessage("");
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);

@@ -44,7 +44,7 @@ const server = serve({
 
         console.log(message)
 
-        return Response.json({ payload_size_bytes: body.length })
+        return Response.json({ result: body.length })
       }
     },
 
