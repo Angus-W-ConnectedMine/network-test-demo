@@ -84,11 +84,23 @@ const server = serve({
 
 import os from 'os';
 
+const isIgnoredInterfaceName = (name: string): boolean => {
+  const ignore = [
+    /wsl\s*\(hyper-v firewall\)/i,
+  ];
+
+  return ignore.some((pattern) => pattern.test(name));
+};
+
 const getLocalNetworkIPs = (): string[] => {
   const interfaces = os.networkInterfaces();
   const ips: string[] = [];
 
   for (const name of Object.keys(interfaces)) {
+    if (isIgnoredInterfaceName(name)) {
+      continue;
+    }
+
     const nets = interfaces[name];
     if (!nets) {
       continue;
