@@ -22,7 +22,7 @@ export function ServerToClient({ messages, addMessage }: ServerToClientProps) {
   }, [addMessage]);
 
   return (
-    <div className="terminal-panel terminal-output">
+    <div className="card terminal-output">
       {messages.length === 0 ? (
         <i>Waiting for messages...</i>
       ) : (

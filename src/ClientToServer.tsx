@@ -46,7 +46,7 @@ export function ClientToServer({ addMessage }: ClientToServerProps) {
         onSubmit={(event) => {
           void sendMessage(event);
         }}
-        className="terminal-panel terminal-form"
+        className="card terminal-form"
       >
         <span className="terminal-prompt">&gt;</span>
 
