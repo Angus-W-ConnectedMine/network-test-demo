@@ -1,23 +1,19 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { ClientToServer } from "./ClientToServer";
 import "./index.css";
 import ServerToClient from "./ServerToClient";
 
-export type Props = {
-  messages: string[];
-  addMessage: (message: string) => void;
-}
+const bulkMessageSizes = [0.1, 1, 5, 10, 50] as const;
+
+type AddMessage = (message: string) => void;
 
 function generateRandomText(bytes: number): string {
   const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
   const charsLen = chars.length;
 
   let result = "";
-
-  let i = 0;
-  while (i < bytes) {
+  for (let i = 0; i < bytes; i += 1) {
     result += chars.charAt(Math.floor(Math.random() * charsLen));
-    i++;
   }
 
   return result;
@@ -25,33 +21,61 @@ function generateRandomText(bytes: number): string {
 
 export function App() {
   const [messages, setMessages] = useState<string[]>([]);
+  const [isSendingBulkData, setIsSendingBulkData] = useState(false);
 
-  const addMessage = (message: string) => {
+  const addMessage: AddMessage = useCallback((message) => {
     setMessages((prev) => [...prev, message]);
-  }
+  }, []);
 
   const sendBulkData = async (mb: number) => {
-    const bytes = mb * 1024 * 1024
-    const data = generateRandomText(bytes)
-    const res = await fetch("/api/data", { method: "POST", body: data })
-    const status = await res.text()
-    addMessage(status)
-  }
+    setIsSendingBulkData(true);
+
+    try {
+      const bytes = Math.round(mb * 1024 * 1024);
+      addMessage(`Tx: sending ${mb.toFixed(1)} MB (${bytes} bytes)`);
+
+      const data = generateRandomText(bytes);
+      const response = await fetch("/api/data", {
+        method: "POST",
+        body: data,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const payload = (await response.json()) as { payload_size_bytes?: number };
+      const payloadSize = payload.payload_size_bytes ?? bytes;
+      addMessage(`Rx: accepted ${payloadSize} bytes`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      addMessage(`ERR: failed to send bulk data (${message})`);
+    } finally {
+      setIsSendingBulkData(false);
+    }
+  };
 
   return (
-    <div className="flex flex-col h-screen max-w-[600px] p-4 mx-auto">
+    <div className="flex h-screen max-w-[600px] flex-col p-4 mx-auto">
       <div className="grow w-full h-full mb-4">
         <ServerToClient messages={messages} addMessage={addMessage} />
       </div>
 
-      <ClientToServer messages={messages} addMessage={addMessage} />
+      <ClientToServer addMessage={addMessage} />
 
-      <div className="mx-auto flex flex-row gap-4 mt-4">
-        <button className="p-3 py-1 text-green-400 border border-green-500/40 rounded hover:bg-green-500/10 active:bg-green-500/20 transition" onClick={() => sendBulkData(0.1)}>0.1 MB</button>
-        <button className="p-3 py-1 text-green-400 border border-green-500/40 rounded hover:bg-green-500/10 active:bg-green-500/20 transition" onClick={() => sendBulkData(1.0)}>1.0 MB</button>
-        <button className="p-3 py-1 text-green-400 border border-green-500/40 rounded hover:bg-green-500/10 active:bg-green-500/20 transition" onClick={() => sendBulkData(5)}>5.0 MB</button>
-        <button className="p-3 py-1 text-green-400 border border-green-500/40 rounded hover:bg-green-500/10 active:bg-green-500/20 transition" onClick={() => sendBulkData(10)}>10.0 MB</button>
-        <button className="p-3 py-1 text-green-400 border border-green-500/40 rounded hover:bg-green-500/10 active:bg-green-500/20 transition" onClick={() => sendBulkData(50)}>50.0 MB</button>
+      <div className="mx-auto mt-4 flex flex-row gap-4">
+        {bulkMessageSizes.map((size) => (
+          <button
+            key={size}
+            className="terminal-button"
+            disabled={isSendingBulkData}
+            onClick={() => {
+              void sendBulkData(size);
+            }}
+          >
+            {size.toFixed(1)} MB
+          </button>
+        ))}
       </div>
     </div>
   );

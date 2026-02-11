@@ -1,47 +1,67 @@
-import { useRef, useState, type FormEvent } from "react";
-import type { Props } from "./App";
+import { useState, type FormEvent } from "react";
 
-export function ClientToServer({ messages, addMessage }: Props) {
-  const [message, setMessage] = useState('');
+type ClientToServerProps = {
+  addMessage: (message: string) => void;
+};
 
-  const testEndpoint = async (e: FormEvent<HTMLFormElement>) => {
+export function ClientToServer({ addMessage }: ClientToServerProps) {
+  const [message, setMessage] = useState("");
+
+  const sendMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      const form = e.currentTarget;
-      const formData = new FormData(form);
-      const message = formData.get("message") as string;
-
-      if (!message) return
-
-      const body = JSON.stringify({
-        "message": message
-      })
-
-      addMessage("Tx: " + message);
-
-      const url = "/api/message"
-      const method = "PUT"
-      const res = await fetch(url, { method, body });
-      const data = await res.text()
-      addMessage("Rx: " + data)
-    } catch (error) {
-      alert(`ERROR: ${error}`);
+    const trimmed = message.trim();
+    if (!trimmed) {
+      return;
     }
 
-    setMessage('');
+    try {
+      addMessage(`Tx: ${trimmed}`);
+
+      const response = await fetch("/api/message", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: trimmed }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = (await response.json()) as { received?: string };
+      const received = data.received ?? "(no message returned)";
+      addMessage(`Rx: ${received}`);
+      setMessage("");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      addMessage(`ERR: failed to send message (${errorMessage})`);
+    }
   };
 
   return (
     <div className="w-full">
       <form
-        onSubmit={testEndpoint}
-        className="flex items-center gap-2 bg-[#111] border border-zinc-800 rounded-lg p-2 font-mono">
-        <span className="text-green-400 select-none">&gt;</span>
+        onSubmit={(event) => {
+          void sendMessage(event);
+        }}
+        className="terminal-panel terminal-form"
+      >
+        <span className="terminal-prompt">&gt;</span>
 
-        <input type="text" name="message" placeholder="message" value={message} onChange={(e) => setMessage(e.target.value)}
-          className="flex-1 bg-transparent text-green-400 placeholder-zinc-600 outline-none border-none" />
-        <button type="submit" className="px-3 py-1 text-green-400 border border-green-500/40 rounded hover:bg-green-500/10 active:bg-green-500/20 transition">
+        <input
+          type="text"
+          name="message"
+          placeholder="message"
+          value={message}
+          onChange={(event) => {
+            setMessage(event.target.value);
+          }}
+          className="terminal-input"
+        />
+
+        <button type="submit" className="terminal-button">
           Send
         </button>
       </form>
