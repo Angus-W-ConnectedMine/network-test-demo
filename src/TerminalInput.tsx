@@ -4,7 +4,7 @@ type ClientToServerProps = {
   addMessage: (message: string) => void;
 };
 
-export function ClientToServer({ addMessage }: ClientToServerProps) {
+export function TerminalInput({ addMessage }: ClientToServerProps) {
   const [message, setMessage] = useState("");
 
   const sendMessage = async (e: FormEvent<HTMLFormElement>) => {

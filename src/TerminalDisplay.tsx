@@ -5,7 +5,7 @@ type ServerToClientProps = {
   addMessage: (message: string) => void;
 };
 
-export function ServerToClient({ messages, addMessage }: ServerToClientProps) {
+export function TerminalDisplay({ messages, addMessage }: ServerToClientProps) {
   useEffect(() => {
     const eventSource = new EventSource("/events");
 
@@ -32,4 +32,4 @@ export function ServerToClient({ messages, addMessage }: ServerToClientProps) {
   );
 }
 
-export default ServerToClient;
+export default TerminalDisplay;

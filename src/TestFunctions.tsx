@@ -30,7 +30,7 @@ function formatDbResult(result: unknown): string {
   }
 }
 
-export function ServerTestButtons({ addMessage }: ServerTestButtonsProps) {
+export function TestFunctions({ addMessage }: ServerTestButtonsProps) {
   const [isSendingBulkData, setIsSendingBulkData] = useState(false);
   const [isFetchingDb, setIsFetchingDb] = useState(false);
 
