@@ -1,6 +1,6 @@
 import { serve, sql } from "bun";
 import index from "./index.html";
-import QRCode from 'qrcode';
+import { showServerQRCode } from "./serverInfo";
 
 const encoder = new TextEncoder();
 
@@ -82,66 +82,18 @@ const server = serve({
   },
 });
 
-import os from 'os';
+showServerQRCode(server.port ?? 0)
 
-const isIgnoredInterfaceName = (name: string): boolean => {
-  const ignore = [
-    /wsl\s*\(hyper-v firewall\)/i,
-  ];
+const sendMessageToOpenStreams = (message: string) => {
+  const data = encoder.encode(`data: ${message}\n\n`)
 
-  return ignore.some((pattern) => pattern.test(name));
-};
-
-const getLocalNetworkIPs = (): string[] => {
-  const interfaces = os.networkInterfaces();
-  const ips: string[] = [];
-
-  for (const name of Object.keys(interfaces)) {
-    if (isIgnoredInterfaceName(name)) {
-      continue;
-    }
-
-    const nets = interfaces[name];
-    if (!nets) {
-      continue;
-    }
-
-    for (const net of nets) {
-      // Skip internal (loopback) and non-IPv4 addresses
-      // 'internal' is a boolean indicating if the interface is internal or not
-      if (net.family === 'IPv4' && !net.internal) {
-        ips.push(net.address);
-      }
-    }
+  for (const controller of openStreams) {
+    controller.enqueue(data);
   }
-
-  return ips;
-};
-
-const localIPs = getLocalNetworkIPs();
-
-if (localIPs.length == 0) {
-  console.log("Could not determine local network IP address.");
-  process.exit(1);
 }
 
-if (localIPs.length > 1) {
-  console.log("Multiple network interfaces detected. Using the first one:", localIPs);
-}
-
-const localIP = localIPs[0]
-
-const address = `http://${localIP}:${server.port}`
-console.log(address);
-
-QRCode.toString(address, { type: 'terminal' }, (err, url) => {
-  if (err) throw err;
-  console.log(url);
-});
-
+// Read from stdin
 process.stdout.write("");
 for await (const line of console) {
-  for (const controller of openStreams) {
-    controller.enqueue(encoder.encode(`data: ${line}\n\n`));
-  }
+  sendMessageToOpenStreams(line)
 }
