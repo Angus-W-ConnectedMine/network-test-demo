@@ -86,7 +86,7 @@ export function ServerTestButtons({ addMessage }: ServerTestButtonsProps) {
   };
 
   return (
-    <div className="card flex flex-col h-fit gap-2 p-4 ml-4">
+    <div className="card flex flex-col h-fit gap-2 p-4 max-w-[600px]">
       <h2>Test Server</h2>
       <button
         type="button"

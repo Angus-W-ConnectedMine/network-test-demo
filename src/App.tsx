@@ -14,9 +14,9 @@ export function App() {
   }, []);
 
   return (
-    <div className="flex h-screen w-screen justify-center flex-col md:flex-row p-4 mx-auto">
-      <div className="flex flex-col max-w-[600px]">
-        <div className="grow w-full h-full mb-4">
+    <div className="mx-auto flex h-screen w-screen flex-col justify-center gap-4 overflow-hidden p-4 md:flex-row">
+      <div className="flex min-h-0 max-w-[600px] flex-1 flex-col">
+        <div className="mb-4 min-h-0 flex-1 w-full">
           <ServerToClient messages={messages} addMessage={addMessage} />
         </div>
 
