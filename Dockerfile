@@ -1,17 +1,14 @@
-FROM oven/bun:1.1.0-slim
+FROM oven/bun:1.3.5
 
 WORKDIR /app
 ENV NODE_ENV=production
 
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 
 RUN bun install --frozen-lockfile --production
 
 COPY . .
 
-RUN useradd -m -u 10001 bunapp
-USER bunapp
-
-EXPOSE 3000
-
-CMD ["bun", "run", "start"]
+USER bun
+EXPOSE 3030
+CMD ["/usr/local/bin/bun", "src/index.ts"]
